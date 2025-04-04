@@ -44,4 +44,14 @@ public class ItemService {
         }
         return responses;
     }
+
+    public ItemResponse getById(int itemId, String session) {
+        Item item = itemRepo.getReferenceById(itemId);
+        ItemResponse response = itemMapper.toResponse(item);
+        Map<Integer, Integer> orderDto = orderService.findOrderItemsMapBySession(session);
+        if (orderDto != null) {
+            response.setCount(orderDto.get(response.getId()));
+        }
+        return response;
+    }
 }
