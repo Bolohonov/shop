@@ -2,6 +2,7 @@ package org.example.shop.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.shop.api.request.OrderAction;
+import org.example.shop.api.response.OrderResponse;
 import org.example.shop.api.response.OrderStatus;
 import org.example.shop.dto.OrderDto;
 import org.example.shop.dto.OrderItemDto;
@@ -29,6 +30,7 @@ public class OrderService {
     private final ItemRepo itemRepo;
     private final OrderItemService orderItemService;
 
+    @Transactional(readOnly = true)
     public Map<Integer, Integer> findOrderItemsMapBySession(String session) {
         return orderRepo.findBySessionAndStatus(session, OrderStatus.NEW.name())
                 .map(orderMapper::toDto)
@@ -58,6 +60,18 @@ public class OrderService {
             }
         }
         orderRepo.save(order);
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getBySession(String session) {
+        return orderRepo.findBySessionAndStatusNot(session, OrderStatus.NEW.name()).stream()
+                .map(orderMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public OrderResponse getById(int orderId) {
+        return orderMapper.toResponse(orderRepo.getReferenceById(orderId));
     }
 
     private Order getOrCreate(String session) {
