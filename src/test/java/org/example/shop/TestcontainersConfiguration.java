@@ -15,7 +15,8 @@ class TestcontainersConfiguration {
         return new PostgreSQLContainer<>(DockerImageName.parse("postgres:latest"))
                 .withDatabaseName("testdb")
                 .withUsername("junit")
-                .withPassword("junit");
+                .withPassword("junit")
+                .withInitScript("schema.sql");
     }
 
 }
