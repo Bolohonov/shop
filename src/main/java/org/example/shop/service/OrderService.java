@@ -2,10 +2,12 @@ package org.example.shop.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.shop.api.request.OrderAction;
+import org.example.shop.api.response.ItemResponse;
 import org.example.shop.api.response.OrderResponse;
 import org.example.shop.api.response.OrderStatus;
 import org.example.shop.dto.OrderDto;
 import org.example.shop.dto.OrderItemDto;
+import org.example.shop.mapper.OrderItemMapper;
 import org.example.shop.model.Item;
 import org.example.shop.model.Order;
 import org.example.shop.model.OrderItem;
@@ -15,9 +17,7 @@ import org.example.shop.mapper.OrderMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +29,15 @@ public class OrderService {
     private final OrderMapper orderMapper;
     private final ItemRepo itemRepo;
     private final OrderItemService orderItemService;
+    private final OrderItemMapper orderItemMapper;
+
+    public Integer makeOrder(String sessionId) {
+        Order order = orderRepo.findBySessionAndStatus(sessionId, OrderStatus.NEW.name()).orElse(null);
+        if (order == null) return null;
+        order.setStatus(OrderStatus.IN_PROGRESS.name());
+        orderRepo.save(order);
+        return order.getId();
+    }
 
     @Transactional(readOnly = true)
     public Map<Integer, Integer> findOrderItemsMapBySession(String session) {
@@ -73,6 +82,18 @@ public class OrderService {
     public OrderResponse getById(int orderId) {
         return orderMapper.toResponse(orderRepo.getReferenceById(orderId));
     }
+
+    @Transactional(readOnly = true)
+    public List<ItemResponse> getActualCart(String sessionId) {
+        return orderRepo.findBySessionAndStatus(sessionId, OrderStatus.NEW.name())
+                .map(Order::getOrderItems)
+                .map(orderItemMapper::toResponse)
+                .orElse(Collections.emptyList())
+                .stream()
+                .sorted(Comparator.comparing(ItemResponse::getId))
+                .toList();
+    }
+
 
     private Order getOrCreate(String session) {
         Optional<Order> order = orderRepo.findBySessionAndStatus(session, OrderStatus.NEW.name());
