@@ -31,6 +31,7 @@ public class OrderMapper {
 
     public static OrderResponse toResponse(Order order) {
         return OrderResponse.builder()
+                .id(order.getId())
                 .items(order.getOrderItems().stream().map(OrderItemMapper::toResponse).toList())
                 .totalSum(getTotalSum(order.getOrderItems()))
                 .build();
