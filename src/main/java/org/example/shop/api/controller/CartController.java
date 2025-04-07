@@ -7,7 +7,6 @@ import org.example.shop.api.request.OrderRequest;
 import org.example.shop.api.response.ItemResponse;
 import org.example.shop.service.CartService;
 import org.example.shop.service.OrderService;
-import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
