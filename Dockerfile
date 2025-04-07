@@ -8,7 +8,7 @@ COPY pom.xml .
 RUN mvn clean package -DskipTests
 
 # Run stage
-FROM openjdk:21
+FROM amazoncorretto:21
 WORKDIR /app
 
 COPY --from=build /app/target/shop.jar app.jar
