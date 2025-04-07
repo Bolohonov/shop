@@ -23,19 +23,3 @@ create table if not exists order_items
     quantity smallint not null default 0,
     primary key (order_id, item_id)
     );
-
-DO $$
-    DECLARE
-        i INT := 1;
-    BEGIN
-        WHILE i <= 100 LOOP
-                INSERT INTO items (title, price, description, img_path)
-                VALUES (
-                           'Item ' || i,
-                           (random() * 1000)::numeric(12,2),
-                           'Description for item ' || i,
-                           '/images/item' || i || '.jpg'
-                       );
-                i := i + 1;
-            END LOOP;
-    END $$;
