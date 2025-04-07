@@ -19,7 +19,6 @@ import java.util.Map;
 public class ItemService {
 
     private final ItemRepo itemRepo;
-    private final ItemMapper itemMapper;
     private final OrderService orderService;
 
     public Page<ItemResponse> getBySearchPageable(String search, String sortRaw, Integer pageSize, String session) {
@@ -35,7 +34,7 @@ public class ItemService {
         } else {
             items = itemRepo.findAll(pageable);
         }
-        Page<ItemResponse> responses = items.map(itemMapper::toResponse);
+        Page<ItemResponse> responses = items.map(ItemMapper::toResponse);
         Map<Integer, Integer> orderDto = orderService.findOrderItemsMapBySession(session);
         if (orderDto != null) {
             responses
@@ -47,7 +46,7 @@ public class ItemService {
 
     public ItemResponse getById(int itemId, String session) {
         Item item = itemRepo.getReferenceById(itemId);
-        ItemResponse response = itemMapper.toResponse(item);
+        ItemResponse response = ItemMapper.toResponse(item);
         Map<Integer, Integer> orderDto = orderService.findOrderItemsMapBySession(session);
         if (orderDto != null) {
             response.setCount(orderDto.get(response.getId()));
