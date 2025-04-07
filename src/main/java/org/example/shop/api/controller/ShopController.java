@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping
+@RequestMapping("/api/main/")
 @Slf4j
 public class ShopController {
 
@@ -39,6 +39,6 @@ public class ShopController {
     @PostMapping(value = "/items/{itemId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String addToCart(@PathVariable int itemId, OrderRequest request, HttpSession session) {
         orderService.updateOrder(itemId, request.action(), session.getId());
-        return "redirect:/";
+        return "main";
     }
 }

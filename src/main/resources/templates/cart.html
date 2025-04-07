@@ -6,10 +6,10 @@
 </head>
 
 <body>
-<a href="/orders" style="float:right;">
+<a href="/api/orders" style="float:right;">
     <b>ЗАКАЗЫ &cudarrr;</b>
 </a>
-<a href="/" style="float:right;">
+<a href="/api" style="float:right;">
     <b>ГЛАВНАЯ &cudarrr;</b>
 </a>
 <table style="width:70%;margin-left:auto;margin-right:auto;">
@@ -32,7 +32,7 @@
                 <tr><td th:text="${item.getDescription()}"></td></tr>
                 <tr>
                     <td>
-                        <form th:action="${'/cart/items/'+item.getId()}" method="post">
+                        <form th:action="${'/api/cart/items/'+item.getId()}" method="post">
                             <button name="action" value="minus">-</button>
                             <span th:text="${item.getCount()}"></span>
                             <button name="action" value="plus">+</button>
@@ -50,7 +50,7 @@
     </tr>
     <tr>
         <td style="text-align:right">
-            <form action="/cart/items/buy" method="post" th:if="${!items.isEmpty()}">
+            <form action="/api/cart/items/buy" method="post" th:if="${!items.isEmpty()}">
                 <button>Купить</button>
             </form>
         </td>

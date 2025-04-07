@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/items")
+@RequestMapping("/api/items")
 @Slf4j
 public class ItemController {
 
@@ -27,7 +27,7 @@ public class ItemController {
     @PostMapping(value = "/{itemId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String addToCart(@PathVariable int itemId, OrderRequest request, HttpSession session) {
         orderService.updateOrder(itemId, request.action(), session.getId());
-        return "redirect:/items/{itemId}";
+        return "redirect:/api/items/{itemId}";
     }
 
     @GetMapping("/{itemId}")

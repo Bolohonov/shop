@@ -23,7 +23,7 @@ public class ItemService {
 
     public Page<ItemResponse> getBySearchPageable(String search, String sortRaw, Integer pageSize, String session) {
         Sort sort = switch (sortRaw) {
-            case "TITLE" -> Sort.by("title");
+            case "ALPHA" -> Sort.by("title");
             case "PRICE" -> Sort.by("price");
             default -> Sort.unsorted();
         };

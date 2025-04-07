@@ -9,6 +9,9 @@ import java.util.Set;
 public class OrderItemMapper {
 
     public static ItemResponse toResponse(OrderItem orderItem) {
+        System.out.println("toResponse");
+        System.out.println(orderItem);
+        System.out.println(orderItem.getItem());
         return ItemResponse.builder()
                 .id(orderItem.getItem().getId())
                 .title(orderItem.getItem().getTitle())
