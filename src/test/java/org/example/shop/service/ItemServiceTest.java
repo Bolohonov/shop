@@ -8,9 +8,11 @@ import org.example.shop.model.Item;
 import org.example.shop.repo.ItemRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
 import java.math.BigDecimal;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@ExtendWith(MockitoExtension.class)
 public class ItemServiceTest {
 
     private static final int DEFAULT_COUNT = 0;
@@ -30,11 +33,6 @@ public class ItemServiceTest {
 
     @InjectMocks
     private ItemService itemService;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void testGetBySearchPageable_WithSearch() {

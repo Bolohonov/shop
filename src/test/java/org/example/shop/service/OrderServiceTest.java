@@ -1,17 +1,17 @@
 package org.example.shop.service;
 
-import org.example.shop.api.request.OrderAction;
 import org.example.shop.api.response.ItemResponse;
 import org.example.shop.api.response.OrderResponse;
 import org.example.shop.api.response.OrderStatus;
 import org.example.shop.model.Item;
 import org.example.shop.model.Order;
 import org.example.shop.model.OrderItem;
-import org.example.shop.repo.ItemRepo;
 import org.example.shop.repo.OrderRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -19,28 +19,20 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class OrderServiceTest {
 
     @Mock
     private OrderRepo orderRepo;
-
-    @Mock
-    private ItemRepo itemRepo;
-
-    @Mock
-    private OrderItemService orderItemService;
 
     @InjectMocks
     private OrderService orderService;
 
     private final String TEST_SESSION_ID = "test-session";
     private Order testOrder;
-    private OrderItem testOrderItem;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-
         testOrder = new Order();
         testOrder.setId(1);
         testOrder.setSession(TEST_SESSION_ID);
