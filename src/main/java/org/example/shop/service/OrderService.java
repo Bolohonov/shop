@@ -26,10 +26,8 @@ public class OrderService {
     private final static String DEFAULT_CUSTOMER = "customer";
 
     private final OrderRepo orderRepo;
-    private final OrderMapper orderMapper;
     private final ItemRepo itemRepo;
     private final OrderItemService orderItemService;
-    private final OrderItemMapper orderItemMapper;
 
     public Integer makeOrder(String sessionId) {
         Order order = orderRepo.findBySessionAndStatus(sessionId, OrderStatus.NEW.name()).orElse(null);
@@ -42,7 +40,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public Map<Integer, Integer> findOrderItemsMapBySession(String session) {
         return orderRepo.findBySessionAndStatus(session, OrderStatus.NEW.name())
-                .map(orderMapper::toDto)
+                .map(OrderMapper::toDto)
                 .map(OrderDto::getOrderItems)
                 .map(this::getOrderItemMap)
                 .orElse(null);
@@ -74,20 +72,20 @@ public class OrderService {
     @Transactional(readOnly = true)
     public List<OrderResponse> getBySession(String session) {
         return orderRepo.findBySessionAndStatusNot(session, OrderStatus.NEW.name()).stream()
-                .map(orderMapper::toResponse)
+                .map(OrderMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public OrderResponse getById(int orderId) {
-        return orderMapper.toResponse(orderRepo.getReferenceById(orderId));
+        return OrderMapper.toResponse(orderRepo.getReferenceById(orderId));
     }
 
     @Transactional(readOnly = true)
     public List<ItemResponse> getActualCart(String sessionId) {
         return orderRepo.findBySessionAndStatus(sessionId, OrderStatus.NEW.name())
                 .map(Order::getOrderItems)
-                .map(orderItemMapper::toResponse)
+                .map(OrderItemMapper::toResponse)
                 .orElse(Collections.emptyList())
                 .stream()
                 .sorted(Comparator.comparing(ItemResponse::getId))

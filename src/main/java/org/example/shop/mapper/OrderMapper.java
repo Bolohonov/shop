@@ -5,27 +5,38 @@ import org.example.shop.dto.OrderDto;
 import org.example.shop.dto.OrderItemDto;
 import org.example.shop.model.Order;
 import org.example.shop.model.OrderItem;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
-@Mapper(uses = {ItemMapper.class})
-public interface OrderMapper {
+public class OrderMapper {
 
-    OrderDto toDto(Order source);
+    public static OrderDto toDto(Order order) {
+        return OrderDto.builder()
+                .id(order.getId())
+                .orderTime(order.getOrderTime())
+                .customer(order.getCustomer())
+                .session(order.getSession())
+                .status(order.getStatus())
+                .orderItems(order.getOrderItems().stream().map(OrderMapper::toDto).toList())
+                .build();
+    }
 
-    @Mapping(target = "itemId", source = "item.id")
-    OrderItemDto toDto(OrderItem source);
+    public static OrderItemDto toDto(OrderItem orderItem) {
+        return OrderItemDto.builder()
+                .itemId(orderItem.getItem().getId())
+                .quantity(orderItem.getQuantity())
+                .build();
+    }
 
-    @Mapping(target = "items", source = "orderItems")
-    @Mapping(target = "totalSum", source = "orderItems", qualifiedByName = "getTotalSum")
-    OrderResponse toResponse(Order source);
+    public static OrderResponse toResponse(Order order) {
+        return OrderResponse.builder()
+                .items(order.getOrderItems().stream().map(OrderItemMapper::toResponse).toList())
+                .totalSum(getTotalSum(order.getOrderItems()))
+                .build();
+    }
 
-    @Named("getTotalSum")
-    default BigDecimal getTotalSum(Set<OrderItem> source) {
+    private static BigDecimal getTotalSum(Set<OrderItem> source) {
         return source.stream()
                 .map(i -> i.getItem().getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

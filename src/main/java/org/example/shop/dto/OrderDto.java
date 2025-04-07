@@ -1,6 +1,7 @@
 package org.example.shop.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -11,10 +12,10 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-@Accessors(chain = true)
+@Builder
 public class OrderDto {
 
-    private final Long id;
+    private final Integer id;
     private final LocalDateTime orderTime;
     private final String customer;
     private final String session;

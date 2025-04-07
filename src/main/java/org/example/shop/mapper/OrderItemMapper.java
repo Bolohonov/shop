@@ -2,22 +2,24 @@ package org.example.shop.mapper;
 
 import org.example.shop.api.response.ItemResponse;
 import org.example.shop.model.OrderItem;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 import java.util.List;
 import java.util.Set;
 
-@Mapper
-public interface OrderItemMapper {
+public class OrderItemMapper {
 
-    @Mapping(target = "id", source = "item.id" )
-    @Mapping(target = "title", source = "item.title" )
-    @Mapping(target = "price", source = "item.price" )
-    @Mapping(target = "description", source = "item.description" )
-    @Mapping(target = "imgPath", source = "item.imgPath" )
-    @Mapping(target = "count", source = "quantity" )
-    ItemResponse toResponse(OrderItem source);
+    public static ItemResponse toResponse(OrderItem orderItem) {
+        return ItemResponse.builder()
+                .id(orderItem.getItem().getId())
+                .title(orderItem.getItem().getTitle())
+                .price(orderItem.getItem().getPrice())
+                .description(orderItem.getItem().getDescription())
+                .imgPath(orderItem.getItem().getImgPath())
+                .count(orderItem.getQuantity())
+                .build();
+    }
 
-    List<ItemResponse> toResponse(Set<OrderItem> source);
+    public static List<ItemResponse> toResponse(Set<OrderItem> orderItems) {
+        return orderItems.stream().map(OrderItemMapper::toResponse).toList();
+    }
 }
