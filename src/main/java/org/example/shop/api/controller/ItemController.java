@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/items")
+@RequestMapping("/items")
 @Slf4j
 public class ItemController {
 

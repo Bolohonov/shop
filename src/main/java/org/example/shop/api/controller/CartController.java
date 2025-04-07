@@ -23,7 +23,7 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/cart/items")
+@RequestMapping("/cart/items")
 @Slf4j
 public class CartController {
 
@@ -44,7 +44,7 @@ public class CartController {
     @PostMapping(value = "/{itemId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String addToCart(@PathVariable int itemId, OrderRequest request, HttpSession session) {
         orderService.updateOrder(itemId, request.action(), session.getId());
-        return "redirect:/api/cart/items";
+        return "redirect:/cart/items";
     }
 
     @PostMapping("/buy")
@@ -52,9 +52,9 @@ public class CartController {
         Integer orderId = orderService.makeOrder(session.getId());
         if (orderId != null) {
             redirectAttrs.addFlashAttribute("newOrder", true);
-            return "redirect:/api/orders/" + orderId;
+            return "redirect:/orders/" + orderId;
         } else {
-            return "redirect:/api/main/items";
+            return "redirect:/main/items";
         }
     }
 }
