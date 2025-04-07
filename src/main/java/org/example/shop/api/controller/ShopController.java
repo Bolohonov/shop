@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/main")
+@RequestMapping
 @Slf4j
 public class ShopController {
 
     private final ItemService itemService;
     private final OrderService orderService;
 
-    @GetMapping("/items")
+    @GetMapping
     public String index(
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "NO") String sort,
@@ -39,6 +39,6 @@ public class ShopController {
     @PostMapping(value = "/items/{itemId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String addToCart(@PathVariable int itemId, OrderRequest request, HttpSession session) {
         orderService.updateOrder(itemId, request.action(), session.getId());
-        return "redirect:/main/items";
+        return "redirect:/";
     }
 }
