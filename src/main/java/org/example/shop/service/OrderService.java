@@ -30,12 +30,14 @@ public class OrderService {
     private final ItemRepo itemRepo;
     private final OrderItemService orderItemService;
 
-    public Integer makeOrder(String sessionId) {
-        Order order = orderRepo.findBySessionAndStatus(sessionId, OrderStatus.NEW.name()).orElse(null);
-        if (order == null) return null;
-        order.setStatus(OrderStatus.IN_PROGRESS.name());
-        orderRepo.save(order);
-        return order.getId();
+    public Mono<Integer> makeOrder(String sessionId) {
+        return orderRepo.findBySessionAndStatus(sessionId, OrderStatus.NEW.name())
+                .switchIfEmpty(Mono.error(new IllegalStateException("Order not found")))
+                .flatMap(order -> {
+                    order.setStatus(OrderStatus.IN_PROGRESS.name());
+                    return orderRepo.save(order);
+                })
+                .map(Order::getId);
     }
 
     @Transactional(readOnly = true)
@@ -55,24 +57,7 @@ public class OrderService {
                     Item item = tuple.getT1();
                     Order order = tuple.getT2();
 
-                    return orderItemService.findOrderItem(order.getId(), item.getId())
-                            .defaultIfEmpty(new OrderItem(item, order))
-                            .flatMap(orderItem -> {
-                                switch (OrderAction.getActionByName(actionName)) {
-                                    case OrderAction.PLUS_ITEM -> {
-                                        return orderItemService.increaseQuantity(orderItem);
-                                    }
-                                    case OrderAction.MINUS_ITEM -> {
-                                        return orderItemService.decreaseQuantity(orderItem);
-                                    }
-                                    case OrderAction.DELETE_ITEM -> {
-                                        return orderItemService.deleteOrderItem(orderItem);
-                                    }
-                                    default -> {
-                                        return Mono.error(new IllegalArgumentException("Unknown action name: " + actionName));
-                                    }
-                                }
-                            });
+                    return orderItemService.updateOrderItem(order, item, actionName);
                     });
 
     }
