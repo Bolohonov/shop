@@ -1,9 +1,15 @@
 package org.example.shop.repo;
 
 import org.example.shop.model.OrderItem;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
-public interface OrderItemRepo extends JpaRepository<OrderItem, Integer> {
+public interface OrderItemRepo extends R2dbcRepository<OrderItem, Integer> {
+
+    Flux<OrderItem> findByOrderId(Long orderId);
+
+    Mono<OrderItem> findByOrderIdAndItemId(Long orderId, Long itemId);
 }

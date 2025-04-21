@@ -1,13 +1,13 @@
 package org.example.shop.repo;
 
 import org.example.shop.model.Item;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 
 @Repository
-public interface ItemRepo extends JpaRepository<Item, Integer> {
+public interface ItemRepo extends R2dbcRepository<Item, Integer> {
 
-    Page<Item> findByTitleContainsIgnoreCase(String title, Pageable pageable);
+    Flux<Item> findByTitleContainsIgnoreCase(String title, Pageable pageable);
 }
