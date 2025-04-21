@@ -16,6 +16,7 @@ import org.example.shop.repo.OrderRepo;
 import org.example.shop.mapper.OrderMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -47,27 +48,35 @@ public class OrderService {
     }
 
     @Transactional
-    public void updateOrder(int itemId, String actionName, String sessionId) {
-        Item item = itemRepo.getReferenceById(itemId);
-        Order order = getOrCreate(sessionId);
-        OrderAction action = OrderAction.getActionByName(actionName);
-        OrderItem orderItem = order.getOrderItems().stream()
-                .filter(i -> i.getItem().getId().equals(item.getId()))
-                .findFirst()
-                .orElse(new OrderItem(item, order, 0));
-        switch (action) {
-            case OrderAction.PLUS_ITEM -> {
-                orderItemService.increaseQuantity(order, orderItem);
-            }
-            case OrderAction.MINUS_ITEM -> {
-                orderItemService.decreaseQuantity(order, orderItem);
-            }
-            case OrderAction.DELETE_ITEM -> {
-                orderItemService.deleteOrderItem(order, orderItem);
-            }
-        }
-        orderRepo.save(order);
+    public Mono<Void> updateOrder(int itemId, String actionName, String sessionId) {
+        return itemRepo.findById(itemId)
+                .zipWith(getOrCreate(sessionId))
+                .flatMap(tuple -> {
+                    Item item = tuple.getT1();
+                    Order order = tuple.getT2();
+
+                    return orderItemService.findOrderItem(order.getId(), item.getId())
+                            .defaultIfEmpty(new OrderItem(item, order))
+                            .flatMap(orderItem -> {
+                                switch (OrderAction.getActionByName(actionName)) {
+                                    case OrderAction.PLUS_ITEM -> {
+                                        return orderItemService.increaseQuantity(orderItem);
+                                    }
+                                    case OrderAction.MINUS_ITEM -> {
+                                        return orderItemService.decreaseQuantity(orderItem);
+                                    }
+                                    case OrderAction.DELETE_ITEM -> {
+                                        return orderItemService.deleteOrderItem(orderItem);
+                                    }
+                                    default -> {
+                                        return Mono.error(new IllegalArgumentException("Unknown action name: " + actionName));
+                                    }
+                                }
+                            });
+                    });
+
     }
+
 
     @Transactional(readOnly = true)
     public List<OrderResponse> getBySession(String session) {
@@ -93,17 +102,21 @@ public class OrderService {
     }
 
 
-    private Order getOrCreate(String session) {
-        Optional<Order> order = orderRepo.findBySessionAndStatus(session, OrderStatus.NEW.name());
-        if (order.isPresent()) {
-            return order.get();
-        }
-        Order newOrder = new Order();
-        newOrder.setSession(session);
-        newOrder.setCustomer(DEFAULT_CUSTOMER);
-        newOrder.setStatus(OrderStatus.NEW.name());
-        return orderRepo.save(newOrder);
+    private Mono<Order> getOrCreate(String session) {
+        return orderRepo
+                .findBySessionAndStatus(session, OrderStatus.NEW.name())
+                .switchIfEmpty(createNew(session));
     }
+
+    private Mono<Order> createNew(String session) {
+            Order newOrder = new Order();
+            newOrder.setSession(session);
+            newOrder.setCustomer(DEFAULT_CUSTOMER);
+            newOrder.setStatus(OrderStatus.NEW.name());
+            return orderRepo.save(newOrder);
+    }
+
+
 
     private Map<Integer, Integer> getOrderItemMap(List<OrderItemDto> orderItemDto) {
         return orderItemDto.stream()

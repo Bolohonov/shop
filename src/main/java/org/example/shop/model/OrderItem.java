@@ -1,39 +1,36 @@
 package org.example.shop.model;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
 @Setter
-@Entity
 @Table(name = "order_items")
 @NoArgsConstructor
 public class OrderItem {
 
-    @EmbeddedId
-    private OrderItemId id;
-
-    @MapsId("orderId")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
-
-    @MapsId("itemId")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "item_id", nullable = false)
-    private Item item;
-
-    @ColumnDefault("0")
-    @Column(name = "quantity", nullable = false)
+    @Id
+    private Integer id;
+    @Column("order_id")
+    private Integer orderId;
+    @Column("item_id")
+    private Integer itemId;
+    @Column("quantity")
     private Integer quantity;
 
     public OrderItem(Item item, Order order, int quantity) {
-        this.item = item;
-        this.order = order;
-        this.quantity = quantity;
-        this.id = new OrderItemId(item.getId(), order.getId());
+        this.itemId = item.getId();
+        this.orderId = order.getId();
+        this.quantity = 0;
+    }
+
+    public OrderItem(Item item, Order order) {
+        this.itemId = item.getId();
+        this.orderId = order.getId();
+        this.quantity = 0;
     }
 }

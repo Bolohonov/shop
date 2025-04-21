@@ -12,6 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.result.view.Rendering;
+import org.springframework.web.server.WebSession;
+import reactor.core.publisher.Mono;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,22 +26,25 @@ public class ShopController {
     private final OrderService orderService;
 
     @GetMapping
-    public String index(
+    public Mono<Rendering> index(
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "NO") String sort,
             @RequestParam(defaultValue = "10") Integer pageSize,
-            HttpSession session,
-            Model model
+            WebSession session
     ) {
-        Page<ItemResponse> items = itemService.getBySearchPageable(search, sort, pageSize, session.getId());
-        model.addAttribute("sort", sort);
-        model.addAttribute("items", items);
-        return "main";
+        return Mono.just(
+                Rendering.view("main")
+                        .modelAttribute("sort", sort)
+                        .modelAttribute("pageSize", pageSize)
+                        .modelAttribute("items", itemService.getBySearchPageable(search, sort, pageSize, session.getId()))
+                        .build()
+        );;
     }
 
     @PostMapping(value = "/main/items/{itemId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String addToCart(@PathVariable int itemId, OrderRequest request, HttpSession session) {
-        orderService.updateOrder(itemId, request.action(), session.getId());
-        return "redirect:/";
+    public Mono<String> addToCart(@PathVariable int itemId, OrderRequest request, WebSession session) {
+        return orderService
+                .updateOrder(itemId, request.action(), session.getId())
+                .thenReturn("redirect:/");
     }
 }

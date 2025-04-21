@@ -1,41 +1,32 @@
 package org.example.shop.model;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.relational.core.mapping.Column;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Getter
 @Setter
-@Entity
 @Table(name = "orders")
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column("id")
     private Integer id;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @CreationTimestamp
-    @Column(name = "order_time", nullable = false)
+    @Column("order_time")
     private LocalDateTime orderTime;
 
-    @Column(name = "customer", nullable = false)
+    @Column("customer")
     private String customer;
 
-    @Column(name = "session", nullable = false)
+    @Column("session")
     private String session;
 
     //  NEW, IN_PROGRESS, FINISHED
-    @Column(name = "status", nullable = false)
+    @Column("status")
     private String status;
-
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<OrderItem> orderItems = new LinkedHashSet<>();
 }

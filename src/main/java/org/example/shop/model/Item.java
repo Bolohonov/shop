@@ -1,31 +1,31 @@
 package org.example.shop.model;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 
 import java.math.BigDecimal;
 
 @Getter
 @Setter
-@Entity
 @Table(name = "items")
 public class Item {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column("id")
     private Integer id;
 
-    @Column(name = "title", nullable = false)
+    @Column("title")
     private String title;
 
-    @Column(name = "price", nullable = false, precision = 12, scale = 2)
+    @Column("price")
     private BigDecimal price;
 
-    @Column(name = "description", nullable = false)
+    @Column("description")
     private String description;
 
-    @Column(name = "img_path", nullable = false)
+    @Column("img_path")
     private String imgPath;
 }
