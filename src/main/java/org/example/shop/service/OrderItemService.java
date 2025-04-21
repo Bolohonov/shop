@@ -2,13 +2,18 @@ package org.example.shop.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.shop.api.request.OrderAction;
+import org.example.shop.api.response.ItemResponse;
+import org.example.shop.api.response.OrderResponse;
 import org.example.shop.model.Item;
 import org.example.shop.model.Order;
 import org.example.shop.model.OrderItem;
+import org.example.shop.repo.ItemRepo;
 import org.example.shop.repo.OrderItemRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
+
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +21,7 @@ import reactor.core.publisher.Mono;
 public class OrderItemService {
 
     private final OrderItemRepo orderItemRepo;
+    private final ItemRepo itemRepo;
 
     public Mono<OrderItem> findOrderItem(Integer orderId, Integer itemId) {
         return orderItemRepo.findByOrderIdAndItemId(orderId, itemId);
@@ -59,5 +65,28 @@ public class OrderItemService {
 
     public Mono<Void> deleteOrderItem(OrderItem orderItem) {
         return orderItemRepo.delete(orderItem);
+    }
+
+    public Mono<OrderResponse> getOrderResponseWithItems(Order order) {
+        return orderItemRepo.findByOrderId(order.getId())
+                .flatMap(orderItem ->
+                        itemRepo.findById(orderItem.getItemId())
+                                .map(item -> ItemResponse.builder()
+                                        .id(item.getId())
+                                        .title(item.getTitle())
+                                        .description(item.getDescription())
+                                        .imgPath(item.getImgPath())
+                                        .count(orderItem.getQuantity())
+                                        .price(item.getPrice())
+                                        .build()
+                                )
+                )
+                .collectList()
+                .map(items -> {
+                    BigDecimal totalSum = items.stream()
+                            .map(ItemResponse::getPrice)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    return new OrderResponse(order.getId(), items, totalSum);
+                });
     }
 }

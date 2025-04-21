@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.shop.api.response.ItemResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import reactor.core.publisher.Flux;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -17,7 +18,7 @@ public class CartService {
 
     private final OrderService orderService;
 
-    public Map<BigDecimal, List<ItemResponse>> getCart(HttpSession session) {
+    public Map<BigDecimal, Flux<ItemResponse>> getCart(HttpSession session) {
         Map<BigDecimal, List<ItemResponse>> result = new HashMap<>();
         List<ItemResponse> items = orderService.getActualCart(session.getId());
         if (CollectionUtils.isEmpty(items)) {

@@ -1,6 +1,5 @@
 package org.example.shop.api.controller;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.shop.api.response.OrderResponse;
@@ -10,6 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.reactive.result.view.Rendering;
+import org.springframework.web.server.WebSession;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -22,10 +24,12 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    public String getOrders(Model model, HttpSession session) {
-        List<OrderResponse> orders = orderService.getBySession(session.getId());
-        model.addAttribute("orders", orders);
-        return "orders";
+    public Mono<Rendering> getOrders(WebSession session) {
+        return Mono.just(
+                Rendering.view("orders")
+                        .modelAttribute("orders", orderService.getBySession(session.getId()))
+                        .build()
+        );
     }
 
     @GetMapping("/{orderId}")

@@ -16,6 +16,7 @@ import org.example.shop.repo.OrderRepo;
 import org.example.shop.mapper.OrderMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
@@ -64,10 +65,9 @@ public class OrderService {
 
 
     @Transactional(readOnly = true)
-    public List<OrderResponse> getBySession(String session) {
-        return orderRepo.findBySessionAndStatusNot(session, OrderStatus.NEW.name()).stream()
-                .map(OrderMapper::toResponse)
-                .collect(Collectors.toList());
+    public Flux<OrderResponse> getBySession(String session) {
+        return orderRepo.findBySessionAndStatusNot(session, OrderStatus.NEW.name())
+                .flatMap(OrderItemService::getOrderResponseWithItems);
     }
 
     @Transactional(readOnly = true)

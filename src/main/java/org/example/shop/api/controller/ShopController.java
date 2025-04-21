@@ -1,16 +1,12 @@
 package org.example.shop.api.controller;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.shop.api.request.OrderRequest;
-import org.example.shop.api.response.ItemResponse;
 import org.example.shop.service.ItemService;
 import org.example.shop.service.OrderService;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.result.view.Rendering;
 import org.springframework.web.server.WebSession;
@@ -38,7 +34,7 @@ public class ShopController {
                         .modelAttribute("pageSize", pageSize)
                         .modelAttribute("items", itemService.getBySearchPageable(search, sort, pageSize, session.getId()))
                         .build()
-        );;
+        );
     }
 
     @PostMapping(value = "/main/items/{itemId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
