@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class OrderItemService {
 
     private final OrderItemRepo orderItemRepo;

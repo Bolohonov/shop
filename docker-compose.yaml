@@ -1,16 +1,16 @@
 services:
   postgres:
     image: postgres:latest
-    container_name: postgres_db
+    container_name: postgres_r2dbc_db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: postgres
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
 
@@ -18,11 +18,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: shop_app
+    container_name: shop
     environment:
       SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/postgres
       SPRING_R2DBC_USERNAME: postgres
-      SPRING_R2DBC_PASSWORD: postgres
+      SPRING_R2DBC_PASSWORD: password
     ports:
       - "8080:8080"
     depends_on:

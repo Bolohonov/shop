@@ -34,7 +34,6 @@ public class OrderService {
                 .map(Order::getId);
     }
 
-    @Transactional(readOnly = true)
     public Mono<Map<Integer, Integer>> findOrderItemsMapBySession(String session) {
         return orderRepo.findBySessionAndStatus(session, OrderStatus.NEW.name())
                 .map(Order::getId)
@@ -42,7 +41,6 @@ public class OrderService {
                 .collectMap(OrderItem::getItemId, OrderItem::getQuantity);
     }
 
-    @Transactional
     public Mono<Void> updateOrder(int itemId, String actionName, String sessionId) {
         return itemRepo.findById(itemId)
                 .zipWith(getOrCreate(sessionId))
@@ -56,13 +54,11 @@ public class OrderService {
     }
 
 
-    @Transactional(readOnly = true)
     public Flux<OrderResponse> getBySession(String session) {
         return orderRepo.findBySessionAndStatusNot(session, OrderStatus.NEW.name())
                 .flatMap(orderItemService::getOrderResponseWithItems);
     }
 
-    @Transactional(readOnly = true)
     public Mono<OrderResponse> getById(int orderId) {
         return orderRepo.findById(orderId)
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("Order not found")))
