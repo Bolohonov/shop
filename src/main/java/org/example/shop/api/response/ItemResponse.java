@@ -1,7 +1,6 @@
 package org.example.shop.api.response;
 
 import lombok.*;
-import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 

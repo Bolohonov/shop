@@ -5,7 +5,6 @@ import org.example.shop.api.response.ItemResponse;
 import org.example.shop.mapper.ItemMapper;
 import org.example.shop.model.Item;
 import org.example.shop.repo.ItemRepo;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,8 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor

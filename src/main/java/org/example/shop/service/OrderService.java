@@ -1,26 +1,19 @@
 package org.example.shop.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.shop.api.request.OrderAction;
-import org.example.shop.api.response.ItemResponse;
 import org.example.shop.api.response.OrderResponse;
 import org.example.shop.api.response.OrderStatus;
-import org.example.shop.dto.OrderDto;
-import org.example.shop.dto.OrderItemDto;
-import org.example.shop.mapper.OrderItemMapper;
 import org.example.shop.model.Item;
 import org.example.shop.model.Order;
 import org.example.shop.model.OrderItem;
 import org.example.shop.repo.ItemRepo;
 import org.example.shop.repo.OrderRepo;
-import org.example.shop.mapper.OrderMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
