@@ -1,22 +1,16 @@
 package org.example.shop;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import java.util.List;
-
+@WebFluxTest(CartControllerTest.class)
 public class CartControllerTest extends TestContainerTest {
 
     @Autowired
     private WebTestClient webTestClient;
-
-    @BeforeEach
-    void setUp() {
-        executeSqlScriptsBlocking(List.of("/sql/items.sql", "/sql/orders.sql", "/sql/order_items.sql"));
-    }
 
     @Test
     void getCartTest() {

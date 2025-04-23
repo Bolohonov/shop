@@ -20,9 +20,9 @@ services:
       dockerfile: Dockerfile
     container_name: shop_app
     environment:
-      SPRING_DATASOURCE_URL: r2dbc:postgresql://postgres:5432/postgres
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/postgres
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
     ports:
       - "8080:8080"
     depends_on:
