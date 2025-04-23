@@ -1,4 +1,10 @@
 spring:
+  web:
+    resources:
+      encoding: UTF-8
+  thymeleaf:
+    encoding: UTF-8
+    cache: false
   application:
     name: shop
   r2dbc:
