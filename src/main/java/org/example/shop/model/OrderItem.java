@@ -25,7 +25,7 @@ public class OrderItem {
     public OrderItem(Item item, Order order, int quantity) {
         this.itemId = item.getId();
         this.orderId = order.getId();
-        this.quantity = 0;
+        this.quantity = quantity;
     }
 
     public OrderItem(Item item, Order order) {

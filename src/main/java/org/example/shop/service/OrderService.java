@@ -9,7 +9,6 @@ import org.example.shop.model.OrderItem;
 import org.example.shop.repo.ItemRepo;
 import org.example.shop.repo.OrderRepo;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -25,7 +24,7 @@ public class OrderService {
     private final OrderItemService orderItemService;
 
     public Mono<Integer> makeOrder(String sessionId) {
-        return orderRepo.findBySessionAndStatus(sessionId, OrderStatus.NEW.name())
+        return orderRepo.findOrderBySessionAndStatusContainsIgnoreCase(sessionId, OrderStatus.NEW.name())
                 .switchIfEmpty(Mono.error(new IllegalStateException("Order not found")))
                 .flatMap(order -> {
                     order.setStatus(OrderStatus.IN_PROGRESS.name());
@@ -35,7 +34,7 @@ public class OrderService {
     }
 
     public Mono<Map<Integer, Integer>> findOrderItemsMapBySession(String session) {
-        return orderRepo.findBySessionAndStatus(session, OrderStatus.NEW.name())
+        return orderRepo.findOrderBySessionAndStatusContainsIgnoreCase(session, OrderStatus.NEW.name())
                 .map(Order::getId)
                 .flatMapMany(orderItemService::getByOrderId)
                 .collectMap(OrderItem::getItemId, OrderItem::getQuantity);
@@ -55,7 +54,7 @@ public class OrderService {
 
 
     public Flux<OrderResponse> getBySession(String session) {
-        return orderRepo.findBySessionAndStatusNot(session, OrderStatus.NEW.name())
+        return orderRepo.findBySessionAndStatusNotContainsIgnoreCase(session, OrderStatus.NEW.name())
                 .flatMap(orderItemService::getOrderResponseWithItems);
     }
 
@@ -67,7 +66,7 @@ public class OrderService {
 
     private Mono<Order> getOrCreate(String session) {
         return orderRepo
-                .findBySessionAndStatus(session, OrderStatus.NEW.name())
+                .findOrderBySessionAndStatusContainsIgnoreCase(session, OrderStatus.NEW.name())
                 .switchIfEmpty(createNew(session));
     }
 

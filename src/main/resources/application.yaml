@@ -5,10 +5,3 @@ spring:
     url: ${SPRING_R2DBC_URL}
     username: ${SPRING_R2DBC_USERNAME}
     password: ${SPRING_R2DBC_PASSWORD}
-  data:
-    r2dbc:
-      repositories:
-        enabled: true
-  sql:
-    init:
-      mode: always

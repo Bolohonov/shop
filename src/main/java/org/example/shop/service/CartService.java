@@ -8,7 +8,6 @@ import org.example.shop.repo.ItemRepo;
 import org.example.shop.repo.OrderItemRepo;
 import org.example.shop.repo.OrderRepo;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -26,7 +25,7 @@ public class CartService {
 
     public Flux<ItemResponse> getCartItems(String session) {
         return orderRepo
-                .findBySessionAndStatus(session, OrderStatus.NEW.name())
+                .findOrderBySessionAndStatusContainsIgnoreCase(session, OrderStatus.NEW.name())
                 .map(Order::getId)
                 .flatMapMany(orderItemRepo::findByOrderId)
                 .flatMap(orderItem -> itemRepo.findById(orderItem.getItemId()).map(item ->

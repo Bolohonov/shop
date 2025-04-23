@@ -1,6 +1,7 @@
 package org.example.shop.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.shop.api.response.ItemResponse;
 import org.example.shop.mapper.ItemMapper;
 import org.example.shop.model.Item;
@@ -13,6 +14,7 @@ import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ItemService {
@@ -27,22 +29,11 @@ public class ItemService {
             default -> Sort.unsorted();
         };
         Pageable pageable = PageRequest.of(0, pageSize, sort);
-        Flux<Item> items;
         if (StringUtils.hasLength(search)) {
-            items = itemRepo.findByTitleContainsIgnoreCase(search, pageable);
+            return itemRepo.findByTitleContainsIgnoreCase(search, pageable).map(ItemMapper::toResponse);
         } else {
-            items = itemRepo.findAllPageable(pageSize, 0);
+            return itemRepo.findAllPageable(pageSize, 0).map(ItemMapper::toResponse);
         }
-        return orderService.findOrderItemsMapBySession(session)
-                .flatMapMany(
-                        orderDto ->
-                                items
-                                        .map(ItemMapper::toResponse)
-                                        .map(item -> {
-                                            item.setCount(orderDto.getOrDefault(item.getId(), 0));
-                                            return item;
-                                        })
-                );
     }
 
     public Mono<ItemResponse> getById(Integer itemId, String session) {

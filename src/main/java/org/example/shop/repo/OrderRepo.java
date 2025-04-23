@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface OrderRepo extends R2dbcRepository<Order, Integer> {
 
-    Mono<Order> findBySessionAndStatus(String session, String status);
+    Mono<Order> findOrderBySessionAndStatusContainsIgnoreCase(String session, String status);
 
-    Flux<Order> findBySessionAndStatusNot(String session, String status);
+    Flux<Order> findBySessionAndStatusNotContainsIgnoreCase(String session, String status);
 }
