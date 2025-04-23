@@ -3,13 +3,10 @@ package org.example.shop.api.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.shop.api.request.OrderRequest;
-import org.example.shop.api.response.ItemResponse;
 import org.example.shop.service.CartService;
 import org.example.shop.service.OrderService;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,10 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.reactive.result.view.Rendering;
 import org.springframework.web.server.WebSession;
 import reactor.core.publisher.Mono;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
