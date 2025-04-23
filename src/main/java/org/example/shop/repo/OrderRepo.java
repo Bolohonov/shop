@@ -7,7 +7,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface OrderRepo extends R2dbcRepository<Order, Integer> {
+public interface OrderRepo extends R2dbcRepository<Order, Long> {
 
     Mono<Order> findOrderBySessionAndStatusContainsIgnoreCase(String session, String status);
 

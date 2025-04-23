@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class OrderResponse {
-    private final int id;
+    private final Long id;
     private final List<ItemResponse> items;
     private final BigDecimal totalSum;
 }

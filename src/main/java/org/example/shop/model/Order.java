@@ -15,7 +15,7 @@ public class Order {
 
     @Id
     @Column("id")
-    private Integer id;
+    private Long id;
 
     @Column("order_time")
     private LocalDateTime orderTime;

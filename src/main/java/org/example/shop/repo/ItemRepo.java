@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
 @Repository
-public interface ItemRepo extends R2dbcRepository<Item, Integer> {
+public interface ItemRepo extends R2dbcRepository<Item, Long> {
 
     Flux<Item> findByTitleContainsIgnoreCase(String title, Pageable pageable);
 

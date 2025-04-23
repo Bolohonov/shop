@@ -23,7 +23,7 @@ public class OrderItemService {
     private final OrderItemRepo orderItemRepo;
     private final ItemRepo itemRepo;
 
-    public Mono<OrderItem> findOrderItem(Integer orderId, Integer itemId) {
+    public Mono<OrderItem> findOrderItem(Long orderId, Long itemId) {
         return orderItemRepo.findByOrderIdAndItemId(orderId, itemId);
     }
 
@@ -90,7 +90,7 @@ public class OrderItemService {
                 });
     }
 
-    public Flux<OrderItem> getByOrderId(Integer orderId) {
+    public Flux<OrderItem> getByOrderId(Long orderId) {
         return orderItemRepo.findByOrderId(orderId);
     }
 }

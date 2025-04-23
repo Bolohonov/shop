@@ -15,7 +15,7 @@ public class Item {
 
     @Id
     @Column("id")
-    private Integer id;
+    private Long id;
 
     @Column("title")
     private String title;

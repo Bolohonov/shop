@@ -7,9 +7,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface OrderItemRepo extends R2dbcRepository<OrderItem, Integer> {
+public interface OrderItemRepo extends R2dbcRepository<OrderItem, Long> {
 
-    Flux<OrderItem> findByOrderId(Integer orderId);
+    Flux<OrderItem> findByOrderId(Long orderId);
 
-    Mono<OrderItem> findByOrderIdAndItemId(Integer orderId, Integer itemId);
+    Mono<OrderItem> findByOrderIdAndItemId(Long orderId, Long itemId);
 }

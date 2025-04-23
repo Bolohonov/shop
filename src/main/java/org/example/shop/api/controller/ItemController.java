@@ -25,13 +25,13 @@ public class ItemController {
     private final OrderService orderService;
 
     @PostMapping(value = "/{itemId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public Mono<String> addToCart(@PathVariable int itemId, OrderRequest request, WebSession session) {
+    public Mono<String> addToCart(@PathVariable Long itemId, OrderRequest request, WebSession session) {
         return orderService.updateOrder(itemId, request.getAction(), session.getId())
                 .thenReturn("redirect:/items/{itemId}");
     }
 
     @GetMapping("/{itemId}")
-    public Mono<Rendering> getItem(@PathVariable int itemId, WebSession session) {
+    public Mono<Rendering> getItem(@PathVariable Long itemId, WebSession session) {
         return Mono.just(
                 Rendering.view("item")
                         .modelAttribute("item", itemService.getById(itemId, session.getId()))

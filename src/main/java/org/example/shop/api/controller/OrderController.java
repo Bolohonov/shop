@@ -30,7 +30,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
-    public Mono<Rendering> getOrder(@PathVariable int orderId, Model model) {
+    public Mono<Rendering> getOrder(@PathVariable Long orderId) {
         return Mono.just(
                 Rendering.view("order")
                         .modelAttribute("order", orderService.getById(orderId))

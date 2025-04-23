@@ -23,7 +23,7 @@ public class OrderService {
     private final ItemRepo itemRepo;
     private final OrderItemService orderItemService;
 
-    public Mono<Integer> makeOrder(String sessionId) {
+    public Mono<Long> makeOrder(String sessionId) {
         return orderRepo.findOrderBySessionAndStatusContainsIgnoreCase(sessionId, OrderStatus.NEW.name())
                 .switchIfEmpty(Mono.error(new IllegalStateException("Order not found")))
                 .flatMap(order -> {
@@ -33,14 +33,14 @@ public class OrderService {
                 .map(Order::getId);
     }
 
-    public Mono<Map<Integer, Integer>> findOrderItemsMapBySession(String session) {
+    public Mono<Map<Long, Integer>> findOrderItemsMapBySession(String session) {
         return orderRepo.findOrderBySessionAndStatusContainsIgnoreCase(session, OrderStatus.NEW.name())
                 .map(Order::getId)
                 .flatMapMany(orderItemService::getByOrderId)
                 .collectMap(OrderItem::getItemId, OrderItem::getQuantity);
     }
 
-    public Mono<Void> updateOrder(int itemId, String actionName, String sessionId) {
+    public Mono<Void> updateOrder(Long itemId, String actionName, String sessionId) {
         return itemRepo.findById(itemId)
                 .zipWith(getOrCreate(sessionId))
                 .flatMap(tuple -> {
@@ -58,7 +58,7 @@ public class OrderService {
                 .flatMap(orderItemService::getOrderResponseWithItems);
     }
 
-    public Mono<OrderResponse> getById(int orderId) {
+    public Mono<OrderResponse> getById(Long orderId) {
         return orderRepo.findById(orderId)
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("Order not found")))
                 .flatMap(orderItemService::getOrderResponseWithItems);
