@@ -12,7 +12,7 @@
     <artifactId>shop</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>shop</name>
-    <description>shop</description>
+    <description>Demo shop project for Spring Boot</description>
     <url/>
     <licenses>
         <license/>

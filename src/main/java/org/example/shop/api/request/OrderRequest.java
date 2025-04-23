@@ -1,3 +1,13 @@
 package org.example.shop.api.request;
 
-public record OrderRequest(String action) {}
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+public class OrderRequest {
+
+    private String action;
+}

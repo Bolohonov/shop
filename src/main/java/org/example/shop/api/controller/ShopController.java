@@ -40,7 +40,7 @@ public class ShopController {
     @PostMapping(value = "/main/items/{itemId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public Mono<String> addToCart(@PathVariable int itemId, OrderRequest request, WebSession session) {
         return orderService
-                .updateOrder(itemId, request.action(), session.getId())
+                .updateOrder(itemId, request.getAction(), session.getId())
                 .thenReturn("redirect:/");
     }
 }

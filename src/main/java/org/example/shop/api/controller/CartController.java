@@ -33,17 +33,17 @@ public class CartController {
 
     @GetMapping
     public Mono<Rendering> getCart(WebSession session) {
-//        Map<BigDecimal, List<ItemResponse>> result = cartService.getCart(session);
-//        if (!CollectionUtils.isEmpty(result)) {
-//            BigDecimal total = result.entrySet().stream().findFirst().get().getKey();
-//            model.addAttribute("items", result.get(total));
-//            model.addAttribute("total", total);
-//        }
+        return Mono.just(
+                Rendering.view("cart")
+                        .modelAttribute("items", cartService.getCartItems(session.getId()))
+                        .modelAttribute("total", cartService.getCartTotalSum(session.getId()))
+                        .build()
+        );
     }
 
     @PostMapping(value = "/{itemId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public Mono<String> addToCart(@PathVariable int itemId, OrderRequest request, WebSession session) {
-        return orderService.updateOrder(itemId, request.action(), session.getId()).thenReturn("redirect:/cart/items");
+        return orderService.updateOrder(itemId, request.getAction(), session.getId()).thenReturn("redirect:/cart/items");
     }
 
     @PostMapping("/buy")

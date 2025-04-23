@@ -11,6 +11,7 @@ import org.example.shop.repo.ItemRepo;
 import org.example.shop.repo.OrderItemRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -88,5 +89,9 @@ public class OrderItemService {
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
                     return new OrderResponse(order.getId(), items, totalSum);
                 });
+    }
+
+    public Flux<OrderItem> getByOrderId(Integer orderId) {
+        return orderItemRepo.findByOrderId(orderId);
     }
 }

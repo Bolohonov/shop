@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
@@ -21,36 +23,41 @@ public class ItemService {
     private final ItemRepo itemRepo;
     private final OrderService orderService;
 
-    public Page<ItemResponse> getBySearchPageable(String search, String sortRaw, Integer pageSize, String session) {
+    public Flux<ItemResponse> getBySearchPageable(String search, String sortRaw, Integer pageSize, String session) {
         Sort sort = switch (sortRaw) {
             case "ALPHA" -> Sort.by("title");
             case "PRICE" -> Sort.by("price");
             default -> Sort.unsorted();
         };
         Pageable pageable = PageRequest.of(0, pageSize, sort);
-        Page<Item> items;
+        Flux<Item> items;
         if (StringUtils.hasLength(search)) {
             items = itemRepo.findByTitleContainsIgnoreCase(search, pageable);
         } else {
-            items = itemRepo.findAll(pageable);
+            items = itemRepo.findAllPageable(pageSize, 0);
         }
-        Page<ItemResponse> responses = items.map(ItemMapper::toResponse);
-        Map<Integer, Integer> orderDto = orderService.findOrderItemsMapBySession(session);
-        if (orderDto != null) {
-            responses
-                    .getContent()
-                    .forEach(item -> item.setCount(orderDto.getOrDefault(item.getId(), 0)));
-        }
-        return responses;
+        return orderService.findOrderItemsMapBySession(session)
+                .flatMapMany(
+                        orderDto ->
+                                items
+                                        .map(ItemMapper::toResponse)
+                                        .map(item -> {
+                                            item.setCount(orderDto.getOrDefault(item.getId(), 0));
+                                            return item;
+                                        })
+                );
     }
 
-    public ItemResponse getById(int itemId, String session) {
-        Item item = itemRepo.getReferenceById(itemId);
-        ItemResponse response = ItemMapper.toResponse(item);
-        Map<Integer, Integer> orderDto = orderService.findOrderItemsMapBySession(session);
-        if (orderDto != null) {
-            response.setCount(orderDto.get(response.getId()));
-        }
-        return response;
+    public Mono<ItemResponse> getById(Integer itemId, String session) {
+        return orderService.findOrderItemsMapBySession(session)
+                .flatMap(
+                        orderDto ->
+                                itemRepo.findById(itemId)
+                                        .map(ItemMapper::toResponse)
+                                        .map(item -> {
+                                            item.setCount(orderDto.getOrDefault(item.getId(), 0));
+                                            return item;
+                                        })
+                );
     }
 }

@@ -42,12 +42,11 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Integer, Integer> findOrderItemsMapBySession(String session) {
+    public Mono<Map<Integer, Integer>> findOrderItemsMapBySession(String session) {
         return orderRepo.findBySessionAndStatus(session, OrderStatus.NEW.name())
-                .map(OrderMapper::toDto)
-                .map(OrderDto::getOrderItems)
-                .map(this::getOrderItemMap)
-                .orElse(null);
+                .map(Order::getId)
+                .flatMapMany(orderItemService::getByOrderId)
+                .collectMap(OrderItem::getItemId, OrderItem::getQuantity);
     }
 
     @Transactional
@@ -67,25 +66,15 @@ public class OrderService {
     @Transactional(readOnly = true)
     public Flux<OrderResponse> getBySession(String session) {
         return orderRepo.findBySessionAndStatusNot(session, OrderStatus.NEW.name())
-                .flatMap(OrderItemService::getOrderResponseWithItems);
+                .flatMap(orderItemService::getOrderResponseWithItems);
     }
 
     @Transactional(readOnly = true)
-    public OrderResponse getById(int orderId) {
-        return OrderMapper.toResponse(orderRepo.getReferenceById(orderId));
+    public Mono<OrderResponse> getById(int orderId) {
+        return orderRepo.findById(orderId)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Order not found")))
+                .flatMap(orderItemService::getOrderResponseWithItems);
     }
-
-    @Transactional(readOnly = true)
-    public List<ItemResponse> getActualCart(String sessionId) {
-        return orderRepo.findBySessionAndStatus(sessionId, OrderStatus.NEW.name())
-                .map(Order::getOrderItems)
-                .map(OrderItemMapper::toResponse)
-                .orElse(Collections.emptyList())
-                .stream()
-                .sorted(Comparator.comparing(ItemResponse::getId))
-                .toList();
-    }
-
 
     private Mono<Order> getOrCreate(String session) {
         return orderRepo
@@ -99,12 +88,5 @@ public class OrderService {
             newOrder.setCustomer(DEFAULT_CUSTOMER);
             newOrder.setStatus(OrderStatus.NEW.name());
             return orderRepo.save(newOrder);
-    }
-
-
-
-    private Map<Integer, Integer> getOrderItemMap(List<OrderItemDto> orderItemDto) {
-        return orderItemDto.stream()
-                .collect(Collectors.toMap(OrderItemDto::getItemId, OrderItemDto::getQuantity));
     }
 }

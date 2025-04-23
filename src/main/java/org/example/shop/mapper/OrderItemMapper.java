@@ -8,21 +8,18 @@ import java.util.Set;
 
 public class OrderItemMapper {
 
-    public static ItemResponse toResponse(OrderItem orderItem) {
-        System.out.println("toResponse");
-        System.out.println(orderItem);
-        System.out.println(orderItem.getItem());
-        return ItemResponse.builder()
-                .id(orderItem.getItem().getId())
-                .title(orderItem.getItem().getTitle())
-                .price(orderItem.getItem().getPrice())
-                .description(orderItem.getItem().getDescription())
-                .imgPath(orderItem.getItem().getImgPath())
-                .count(orderItem.getQuantity())
-                .build();
-    }
-
-    public static List<ItemResponse> toResponse(Set<OrderItem> orderItems) {
-        return orderItems.stream().map(OrderItemMapper::toResponse).toList();
-    }
+//    public static ItemResponse toResponse(OrderItem orderItem) {
+//        return ItemResponse.builder()
+//                .id(orderItem.getItem().getId())
+//                .title(orderItem.getItem().getTitle())
+//                .price(orderItem.getItem().getPrice())
+//                .description(orderItem.getItem().getDescription())
+//                .imgPath(orderItem.getItem().getImgPath())
+//                .count(orderItem.getQuantity())
+//                .build();
+//    }
+//
+//    public static List<ItemResponse> toResponse(Set<OrderItem> orderItems) {
+//        return orderItems.stream().map(OrderItemMapper::toResponse).toList();
+//    }
 }

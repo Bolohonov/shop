@@ -1,33 +1,56 @@
 package org.example.shop.service;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.shop.api.response.ItemResponse;
+import org.example.shop.api.response.OrderStatus;
+import org.example.shop.model.Order;
+import org.example.shop.repo.ItemRepo;
+import org.example.shop.repo.OrderItemRepo;
+import org.example.shop.repo.OrderRepo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CartService {
 
+    private final OrderRepo orderRepo;
+    private final OrderItemRepo orderItemRepo;
+    private final ItemRepo itemRepo;
     private final OrderService orderService;
 
-    public Map<BigDecimal, Flux<ItemResponse>> getCart(HttpSession session) {
-        Map<BigDecimal, List<ItemResponse>> result = new HashMap<>();
-        List<ItemResponse> items = orderService.getActualCart(session.getId());
-        if (CollectionUtils.isEmpty(items)) {
-            return null;
-        }
-        BigDecimal total = items.stream()
+    public Flux<ItemResponse> getCartItems(String session) {
+        return orderRepo
+                .findBySessionAndStatus(session, OrderStatus.NEW.name())
+                .map(Order::getId)
+                .flatMapMany(orderItemRepo::findByOrderId)
+                .flatMap(orderItem -> itemRepo.findById(orderItem.getItemId()).map(item ->
+                                ItemResponse.builder()
+                                        .id(orderItem.getItemId())
+                                        .title(item.getTitle())
+                                        .price(item.getPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity())))
+                                        .description(item.getDescription())
+                                        .imgPath(item.getImgPath())
+                                        .count(orderItem.getQuantity())
+                                        .build()
+                        )
+                )
+                .sort(Comparator.comparing(ItemResponse::getId));
+    }
+
+    public Mono<BigDecimal> getCartTotalSum(String session) {
+        return getCartItems(session)
                 .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getCount())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        result.put(total, items);
-        return result;
     }
 }
