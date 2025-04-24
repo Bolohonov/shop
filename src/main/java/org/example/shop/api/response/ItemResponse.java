@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @EqualsAndHashCode
 @Builder
 public class ItemResponse {
-    private final Integer id;
+    private final Long id;
     private final String title;
     private final BigDecimal price;
     private final String description;

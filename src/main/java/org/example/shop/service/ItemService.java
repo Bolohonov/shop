@@ -36,7 +36,7 @@ public class ItemService {
         }
     }
 
-    public Mono<ItemResponse> getById(Integer itemId, String session) {
+    public Mono<ItemResponse> getById(Long itemId, String session) {
         return orderService.findOrderItemsMapBySession(session)
                 .flatMap(
                         orderDto ->
