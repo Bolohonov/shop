@@ -20,7 +20,6 @@ import reactor.core.publisher.Mono;
 public class ItemService {
 
     private final ItemRepo itemRepo;
-    private final ItemMapper itemMapper;
     private final OrderService orderService;
 
     public Flux<ItemResponse> getBySearchPageable(String search, String sortRaw, Integer pageSize, String session) {
@@ -30,30 +29,19 @@ public class ItemService {
             default -> Sort.unsorted();
         };
         Pageable pageable = PageRequest.of(0, pageSize, sort);
-        Flux<Item> items;
         if (StringUtils.hasLength(search)) {
-            items = itemRepo.findByTitleContainsIgnoreCase(search, pageable);
+            return itemRepo.findByTitleContainsIgnoreCase(search, pageable).map(ItemMapper::toResponse);
         } else {
-            items = itemRepo.findAllPageable(pageSize, 0);
+            return itemRepo.findAllPageable(pageSize, 0).map(ItemMapper::toResponse);
         }
-        return orderService.findOrderItemsMapBySession(session)
-                .flatMapMany(
-                        orderDto ->
-                                items
-                                        .map(itemMapper::toResponse)
-                                        .map(item -> {
-                                            item.setCount(orderDto.getOrDefault(item.getId(), 0));
-                                            return item;
-                                        })
-                );
     }
 
-    public Mono<ItemResponse> getById(Long itemId, String session) {
+    public Mono<ItemResponse> getById(Integer itemId, String session) {
         return orderService.findOrderItemsMapBySession(session)
                 .flatMap(
                         orderDto ->
                                 itemRepo.findById(itemId)
-                                        .map(itemMapper::toResponse)
+                                        .map(ItemMapper::toResponse)
                                         .map(item -> {
                                             item.setCount(orderDto.getOrDefault(item.getId(), 0));
                                             return item;

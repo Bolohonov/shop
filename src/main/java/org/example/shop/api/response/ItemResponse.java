@@ -9,9 +9,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Builder
-@ToString
 public class ItemResponse {
-    private final Long id;
+    private final Integer id;
     private final String title;
     private final BigDecimal price;
     private final String description;
