@@ -8,7 +8,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.List;
 
-class MainControllerTest extends TestContainerTest {
+class ShopControllerTest extends TestContainerTest {
 
     @Autowired
     private WebTestClient webTestClient;
