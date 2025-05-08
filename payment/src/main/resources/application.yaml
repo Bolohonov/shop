@@ -1,18 +1,13 @@
 spring:
   application:
-    name: showcase
+    name: payment
 
-  server:
-    port: 8080
-
-  # DB
   datasource:
-    url: r2dbc:postgresql://postgresql:5432/showcase
+    url: r2dbc:postgresql://postgresql:5433/payment
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
 
-  # JPA
   jpa:
     hibernate:
       ddl-auto: update
@@ -25,17 +20,6 @@ spring:
     init:
       mode: always
 
-  # payment
-  payment:
-      url: http://payment:8081
+server:
+  port: 8081
 
-  # Redis
-  data:
-    redis:
-      host: redis_container
-      port: 6379
-      timeout: 2000
-      time-to-live: 60s
-
-  cache:
-    type: redis

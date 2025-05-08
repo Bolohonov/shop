@@ -1,4 +1,4 @@
-package org.example.showcase.api.config;
+package org.example.showcase.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.showcase.api.exception.CartNotFoundException;

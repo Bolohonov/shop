@@ -4,7 +4,7 @@ services:
     container_name: postgres_r2dbc_db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     ports:
       - "5432:5432"
@@ -19,24 +19,25 @@ services:
     container_name: postgres_payment
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: payment
     ports:
       - "5433:5432"
     volumes:
-      - payment_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
 
-  app:
+  showcase:
     build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: shop
+      context: ./showcase
+      dockerfile: showcase/Dockerfile
+    container_name: showcase
     environment:
       SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/postgres
       SPRING_R2DBC_USERNAME: postgres
-      SPRING_R2DBC_PASSWORD: password
+      SPRING_R2DBC_PASSWORD: postgres
     ports:
       - "8080:8080"
     depends_on:
@@ -46,11 +47,10 @@ services:
 
   payment:
     build:
-      context: .
-      dockerfile: Dockerfile.payment
+      context: ./payment
+      dockerfile: payment/Dockerfile-payment
     image: payment
     container_name: payment
-    working_dir: /app
     ports:
       - "8081:8081"
     depends_on:

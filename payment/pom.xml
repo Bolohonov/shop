@@ -61,6 +61,25 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.openapitools</groupId>
+			<artifactId>jackson-databind-nullable</artifactId>
+			<version>0.2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations-jakarta</artifactId>
+			<version>2.2.25</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -93,7 +112,7 @@
 					<library>spring-boot</library>
 					<output>${project.build.directory}/generated-sources/openapi</output>
 					<apiPackage>org.example.payment.api</apiPackage>
-					<modelPackage>ru.yandex.payment.model</modelPackage>
+					<modelPackage>org.example.payment.model</modelPackage>
 					<configOptions>
 						<interfaceOnly>true</interfaceOnly>
 						<reactive>true</reactive>
