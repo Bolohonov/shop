@@ -6,12 +6,14 @@ import org.example.showcase.api.request.OrderRequest;
 import org.example.showcase.service.CartService;
 import org.example.showcase.service.OrderService;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.reactive.result.view.Rendering;
+import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebSession;
 import reactor.core.publisher.Mono;
 
@@ -40,12 +42,7 @@ public class CartController {
     }
 
     @PostMapping("/buy")
-    public Mono<Rendering> makeOrder(WebSession session) {
-        return orderService.makeOrder(session.getId())
-                .map(orderId ->
-                        Rendering.view("redirect:/orders/" + orderId)
-                                .modelAttribute("newOrder", true)
-                                .build()
-                );
+    public Mono<ResponseEntity<Void>> makeOrder(WebSession session, ServerWebExchange exchange) {
+        return orderService.makeOrder(session.getId(), exchange);
     }
 }
