@@ -1,0 +1,82 @@
+package org.example.showcase.service;
+
+import lombok.RequiredArgsConstructor;
+import org.example.showcase.api.exception.OrderNotFoundException;
+import org.example.showcase.api.response.OrderResponse;
+import org.example.showcase.api.response.OrderStatus;
+import org.example.showcase.model.Item;
+import org.example.showcase.model.Order;
+import org.example.showcase.model.OrderItem;
+import org.example.showcase.repo.ItemRepo;
+import org.example.showcase.repo.OrderRepo;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.*;
+
+@Service
+@RequiredArgsConstructor
+public class OrderService {
+    private final static String DEFAULT_CUSTOMER = "customer";
+
+    private final OrderRepo orderRepo;
+    private final ItemRepo itemRepo;
+    private final OrderItemService orderItemService;
+
+    public Mono<Long> makeOrder(String sessionId) {
+        return orderRepo.findOrderBySessionAndStatusContainsIgnoreCase(sessionId, OrderStatus.NEW.name())
+                .switchIfEmpty(Mono.error(new OrderNotFoundException("Заказ не найден")))
+                .flatMap(order -> {
+                    order.setStatus(OrderStatus.IN_PROGRESS.name());
+                    return orderRepo.save(order);
+                })
+                .map(Order::getId);
+    }
+
+    public Mono<Map<Long, Integer>> findOrderItemsMapBySession(String session) {
+        return orderRepo.findOrderBySessionAndStatusContainsIgnoreCase(session, OrderStatus.NEW.name())
+                .map(Order::getId)
+                .flatMapMany(orderItemService::getByOrderId)
+                .collectMap(OrderItem::getItemId, OrderItem::getQuantity);
+    }
+
+    public Mono<Void> updateOrder(Long itemId, String actionName, String sessionId) {
+        return itemRepo.findById(itemId)
+                .zipWith(getOrCreate(sessionId))
+                .flatMap(tuple -> {
+                    Item item = tuple.getT1();
+                    Order order = tuple.getT2();
+
+                    return orderItemService.updateOrderItem(order, item, actionName);
+                    });
+
+    }
+
+
+    public Flux<OrderResponse> getBySession(String session) {
+        return orderRepo.findBySessionAndStatusNotContainsIgnoreCase(session, OrderStatus.NEW.name())
+                .flatMap(orderItemService::getOrderResponseWithItems)
+                .switchIfEmpty(Mono.error(new OrderNotFoundException("Заказ не найден")));
+    }
+
+    public Mono<OrderResponse> getById(Long orderId) {
+        return orderRepo.findById(orderId)
+                .switchIfEmpty(Mono.error(new OrderNotFoundException("Заказ не найден")))
+                .flatMap(orderItemService::getOrderResponseWithItems);
+    }
+
+    private Mono<Order> getOrCreate(String session) {
+        return orderRepo
+                .findOrderBySessionAndStatusContainsIgnoreCase(session, OrderStatus.NEW.name())
+                .switchIfEmpty(createNew(session));
+    }
+
+    private Mono<Order> createNew(String session) {
+            Order newOrder = new Order();
+            newOrder.setSession(session);
+            newOrder.setCustomer(DEFAULT_CUSTOMER);
+            newOrder.setStatus(OrderStatus.NEW.name());
+            return orderRepo.save(newOrder);
+    }
+}
