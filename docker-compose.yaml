@@ -30,9 +30,7 @@ services:
       - app-network
 
   showcase:
-    build:
-      context: ./showcase
-      dockerfile: showcase/Dockerfile
+    build: showcase
     container_name: showcase
     environment:
       SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/postgres
@@ -46,10 +44,7 @@ services:
       - app-network
 
   payment:
-    build:
-      context: ./payment
-      dockerfile: payment/Dockerfile-payment
-    image: payment
+    build: payment
     container_name: payment
     ports:
       - "8081:8081"
