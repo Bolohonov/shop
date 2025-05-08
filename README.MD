@@ -39,7 +39,7 @@
 
 - **Backend**: Spring Boot (3.4.4).
 - **Frontend**: HTML, JavaScript.
-- **База данных**: R2DBC-PostgreSQL.
+- **База данных**: R2DBC-PostgreSQL, Redis
 - **Сборка**: Maven.
 - **Java**: 21.
 
