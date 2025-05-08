@@ -1,6 +1,7 @@
 package org.example.shop.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.shop.api.exception.IllegalActionException;
 import org.example.shop.api.request.OrderAction;
 import org.example.shop.api.response.ItemResponse;
 import org.example.shop.api.response.OrderResponse;
@@ -42,7 +43,7 @@ public class OrderItemService {
                             return deleteOrderItem(orderItem);
                         }
                         default -> {
-                            return Mono.error(new IllegalArgumentException("Unknown action name: " + actionName));
+                            return Mono.error(new IllegalActionException("Некорректная операция: " + actionName));
                         }
                     }
                 });

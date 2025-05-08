@@ -1,6 +1,7 @@
 package org.example.shop.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.shop.api.exception.OrderNotFoundException;
 import org.example.shop.api.response.OrderResponse;
 import org.example.shop.api.response.OrderStatus;
 import org.example.shop.model.Item;
@@ -25,7 +26,7 @@ public class OrderService {
 
     public Mono<Long> makeOrder(String sessionId) {
         return orderRepo.findOrderBySessionAndStatusContainsIgnoreCase(sessionId, OrderStatus.NEW.name())
-                .switchIfEmpty(Mono.error(new IllegalStateException("Order not found")))
+                .switchIfEmpty(Mono.error(new OrderNotFoundException("Заказ не найден")))
                 .flatMap(order -> {
                     order.setStatus(OrderStatus.IN_PROGRESS.name());
                     return orderRepo.save(order);
@@ -55,12 +56,13 @@ public class OrderService {
 
     public Flux<OrderResponse> getBySession(String session) {
         return orderRepo.findBySessionAndStatusNotContainsIgnoreCase(session, OrderStatus.NEW.name())
-                .flatMap(orderItemService::getOrderResponseWithItems);
+                .flatMap(orderItemService::getOrderResponseWithItems)
+                .switchIfEmpty(Mono.error(new OrderNotFoundException("Заказ не найден")));
     }
 
     public Mono<OrderResponse> getById(Long orderId) {
         return orderRepo.findById(orderId)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Order not found")))
+                .switchIfEmpty(Mono.error(new OrderNotFoundException("Заказ не найден")))
                 .flatMap(orderItemService::getOrderResponseWithItems);
     }
 

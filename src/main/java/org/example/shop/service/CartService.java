@@ -1,6 +1,8 @@
 package org.example.shop.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.shop.api.exception.CartNotFoundException;
+import org.example.shop.api.exception.OrderNotFoundException;
 import org.example.shop.api.response.ItemResponse;
 import org.example.shop.api.response.OrderStatus;
 import org.example.shop.model.Order;
@@ -27,6 +29,7 @@ public class CartService {
         return orderRepo
                 .findOrderBySessionAndStatusContainsIgnoreCase(session, OrderStatus.NEW.name())
                 .map(Order::getId)
+                .switchIfEmpty(Mono.error(new CartNotFoundException("Корзина не найдена")))
                 .flatMapMany(orderItemRepo::findByOrderId)
                 .flatMap(orderItem -> itemRepo.findById(orderItem.getItemId()).map(item ->
                                 ItemResponse.builder()
@@ -45,6 +48,7 @@ public class CartService {
     public Mono<BigDecimal> getCartTotalSum(String session) {
         return getCartItems(session)
                 .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getCount())))
+                .switchIfEmpty(Mono.error(new CartNotFoundException("Корзина не найдена")))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
