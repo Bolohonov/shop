@@ -23,3 +23,10 @@ create table if not exists order_items
     quantity smallint not null default 0,
     primary key (order_id, item_id)
 );
+
+create table if not exists users (
+     id serial primary key,
+     username VARCHAR(255) NOT NULL UNIQUE,
+     password VARCHAR(255) NOT NULL,
+     role VARCHAR(50) NOT NULL
+);

@@ -25,6 +25,12 @@ create table if not exists order_items
     CONSTRAINT uk_order_item UNIQUE (order_id, item_id)
 );
 
+create table if not exists users (
+     id serial primary key,
+     username VARCHAR(255) NOT NULL UNIQUE,
+     password VARCHAR(255) NOT NULL,
+     role VARCHAR(50) NOT NULL
+);
 
 
 --Наполнение таблицы
