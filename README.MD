@@ -37,7 +37,7 @@
 
 ## Технологии:
 
-- **Backend**: Spring Boot (3.4.4).
+- **Backend**: Spring Boot (3.4.4) with Spring Security.
 - **Frontend**: HTML, JavaScript.
 - **База данных**: R2DBC-PostgreSQL, Redis
 - **Сборка**: Maven.
