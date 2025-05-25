@@ -3,6 +3,7 @@ package org.example.showcase.api.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.showcase.service.OrderService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public Mono<Rendering> getOrders(WebSession session) {
         return Mono.just(
                 Rendering.view("orders")
@@ -29,6 +31,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
+    @PreAuthorize("isAuthenticated()")
     public Mono<Rendering> getOrder(@PathVariable Long orderId) {
         return Mono.just(
                 Rendering.view("order")

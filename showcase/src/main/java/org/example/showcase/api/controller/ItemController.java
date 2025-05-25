@@ -6,6 +6,7 @@ import org.example.showcase.api.request.OrderRequest;
 import org.example.showcase.service.ItemService;
 import org.example.showcase.service.OrderService;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ public class ItemController {
     private final OrderService orderService;
 
     @PostMapping(value = "/{itemId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PreAuthorize("isAuthenticated()")
     public Mono<String> addToCart(@PathVariable Long itemId, OrderRequest request, WebSession session) {
         return orderService.updateOrder(itemId, request.getAction(), session.getId())
                 .thenReturn("redirect:/items/{itemId}");

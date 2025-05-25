@@ -7,6 +7,7 @@ import org.example.showcase.service.CartService;
 import org.example.showcase.service.OrderService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ public class CartController {
     private final OrderService orderService;
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public Mono<Rendering> getCart(WebSession session) {
         return Mono.just(
                 Rendering.view("cart")
@@ -37,11 +39,13 @@ public class CartController {
     }
 
     @PostMapping(value = "/{itemId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PreAuthorize("isAuthenticated()")
     public Mono<String> addToCart(@PathVariable Long itemId, OrderRequest request, WebSession session) {
         return orderService.updateOrder(itemId, request.getAction(), session.getId()).thenReturn("redirect:/cart/items");
     }
 
     @PostMapping("/buy")
+    @PreAuthorize("isAuthenticated()")
     public Mono<ResponseEntity<Void>> makeOrder(WebSession session, ServerWebExchange exchange) {
         return orderService.makeOrder(session.getId(), exchange);
     }
